@@ -2,9 +2,10 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import { Heart, ShoppingBag, IndianRupee, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, IndianRupee, Sparkles, Leaf } from "lucide-react";
 import { addToCart } from "../../redux/slices/cartSlice";
 import { toggleWishlist } from "../../redux/slices/wishlistSlice";
+import { calculateCO2Saved, formatCO2 } from "../../utils/sustainabilityUtils";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -20,15 +21,18 @@ const ProductCard = ({ product }) => {
   );
   const isInCart = cartItems.some((item) => item.product.id === product.id);
   const price = Number(product.price) || 0;
+  
+  // Calculate CO2 saved
+  const co2Saved = calculateCO2Saved(product.category);
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // Prevent navigation when clicking button
+    e.stopPropagation();
     if (isSold) return;
     dispatch(addToCart(product));
   };
 
   const handleWishlist = (e) => {
-    e.stopPropagation(); // Prevent navigation when clicking button
+    e.stopPropagation();
     dispatch(toggleWishlist(product));
   };
 
@@ -65,6 +69,14 @@ const ProductCard = ({ product }) => {
             </div>
           ) : null;
         })()
+      )}
+
+      {/* Sustainability badge - Top Left (below NEW badge if present) */}
+      {!isSold && (
+        <div className="absolute z-10 top-10 left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
+          <Leaf className="w-3 h-3" />
+          {formatCO2(co2Saved)}
+        </div>
       )}
 
       {/* Wishlist heart button */}

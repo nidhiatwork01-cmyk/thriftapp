@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { addToCart } from "../../redux/slices/cartSlice";
 import { toggleWishlist } from "../../redux/slices/wishlistSlice";
+import SustainabilityBadge from "../common/SustainabilityBadge";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -29,7 +30,6 @@ const ProductDetails = () => {
   const cartItems = useSelector((state) => state.cart.items);
 
   const [product, setProduct] = useState(null);
-  const [imageZoom, setImageZoom] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
@@ -66,7 +66,6 @@ const ProductDetails = () => {
 
   const handleShare = () => {
     setShowShareModal(true);
-    // Copy link to clipboard
     navigator.clipboard.writeText(window.location.href);
     setTimeout(() => setShowShareModal(false), 2000);
   };
@@ -82,7 +81,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white sticky top-0 z-10 border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -107,7 +106,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 pb-32">
         {/* Sold Badge Banner */}
         {isSold && (
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-3">
@@ -123,21 +122,14 @@ const ProductDetails = () => {
 
         {/* Image Section */}
         <div className="relative">
-          <div
-            className={`relative aspect-[4/5] rounded-3xl overflow-hidden bg-gray-100 ${
-              imageZoom ? "cursor-zoom-out" : "cursor-zoom-in"
-            }`}
-            onClick={() => setImageZoom(!imageZoom)}
-          >
+          <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-gray-100">
             <img
               src={
                 product.imageUrl ||
                 "https://images.pexels.com/photos/6159954/pexels-photo-6159954.jpeg?auto=compress&cs=tinysrgb&w=800"
               }
               alt={product.name}
-              className={`w-full h-full object-cover transition-transform duration-300 ${
-                imageZoom ? "scale-150" : "scale-100"
-              } ${isSold ? "opacity-60" : ""}`}
+              className={`w-full h-full object-cover ${isSold ? "opacity-60" : ""}`}
             />
             {isSold && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -157,9 +149,7 @@ const ProductDetails = () => {
                 : "bg-white/90 text-gray-700 hover:bg-white"
             }`}
           >
-            <Heart
-              className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`}
-            />
+            <Heart className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`} />
           </button>
         </div>
 
@@ -229,6 +219,9 @@ const ProductDetails = () => {
           )}
         </div>
 
+        {/* Sustainability Badge */}
+        <SustainabilityBadge category={product.category} showDetails={true} />
+
         {/* Delivery & Policy Info */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -241,7 +234,7 @@ const ProductDetails = () => {
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-900">
-                  Standard Delivery (5-7 days)
+                  Standard Delivery (5–7 days)
                 </p>
                 <p className="text-xs text-gray-600 mt-0.5">
                   Flat ₹50 delivery charge per item
@@ -277,7 +270,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-20">
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-4 z-20">
         <div className="max-w-2xl mx-auto flex gap-3">
           <button
             onClick={handleWishlist}
@@ -287,9 +280,7 @@ const ProductDetails = () => {
                 : "border-gray-200 hover:border-gray-300"
             }`}
           >
-            <Heart
-              className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`}
-            />
+            <Heart className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`} />
           </button>
 
           <button
