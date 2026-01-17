@@ -115,7 +115,7 @@ const Login = () => {
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
                   }`}
-                  placeholder="your@email.com"
+                  placeholder="ENTER-nidhiatwork.01@gmail.com"
                 />
               </div>
             </div>
@@ -146,7 +146,7 @@ const Login = () => {
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
                   }`}
-                  placeholder="Enter your password"
+                  placeholder="Enter- 123456"
                 />
                 <button
                   type="button"

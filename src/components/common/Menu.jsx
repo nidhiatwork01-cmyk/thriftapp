@@ -13,7 +13,6 @@ import {
   Sun,
   Settings,
   Heart,
-  Package,
   X,
   History,
 } from "lucide-react";
