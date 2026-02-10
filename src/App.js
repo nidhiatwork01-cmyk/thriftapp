@@ -22,8 +22,8 @@ import SellerDashboard from "./components/seller/SellerDashboard";
 const App = () => {
   return (
     <Routes>
-      {/* Redirect root to login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Redirect root to home */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
 
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
@@ -37,7 +37,6 @@ const App = () => {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/orders" element={<OrderHistory />} /> {/* ⭐ NEW ROUTE */}
-
         {/* Seller routes */}
         <Route path="/seller-registration" element={<SellerRegistration />} />
         <Route path="/seller-dashboard" element={<SellerDashboard />} />
