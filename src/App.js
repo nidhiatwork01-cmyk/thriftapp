@@ -22,8 +22,8 @@ import SellerDashboard from "./components/seller/SellerDashboard";
 const App = () => {
   return (
     <Routes>
-      {/* Redirect root to login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Redirect root to home */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
 
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
