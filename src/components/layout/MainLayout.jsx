@@ -64,13 +64,13 @@ const MainLayout = () => {
       {/* Top Header (Conditional) */}
       {showTopHeader && (
         <header
-          className={`sticky top-0 z-30 border-b ${
+          className={`sticky top-0 z-30 border-b backdrop-blur supports-[backdrop-filter]:bg-opacity-90 ${
             isDarkMode
-              ? "bg-gray-900 border-gray-800"
-              : "bg-white border-gray-200"
+              ? "bg-gray-900/95 border-gray-800"
+              : "bg-white/95 border-gray-200"
           }`}
         >
-          <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <div className="px-4 py-3 flex items-center justify-between gap-3 max-w-7xl mx-auto">
             {/* Logo/Title */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
@@ -89,6 +89,7 @@ const MainLayout = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSearch(!showSearch)}
+                aria-label="Toggle search"
                 className={`p-2 rounded-lg transition ${
                   isDarkMode
                     ? "hover:bg-gray-800 text-gray-300"
@@ -99,6 +100,7 @@ const MainLayout = () => {
               </button>
               <button
                 onClick={() => setIsMenuOpen(true)}
+                aria-label="Open menu"
                 className={`p-2 rounded-lg transition ${
                   isDarkMode
                     ? "hover:bg-gray-800 text-gray-300"
@@ -112,7 +114,7 @@ const MainLayout = () => {
 
           {/* Search Bar (Expandable) */}
           {showSearch && (
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-3 max-w-7xl mx-auto w-full">
               <SearchBar isDarkMode={isDarkMode} />
             </div>
           )}
@@ -120,19 +122,19 @@ const MainLayout = () => {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto pb-20 p-4">
+      <main className="flex-1 overflow-auto pb-24 p-4">
         <Outlet />
       </main>
 
       {/* Bottom Navigation */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 z-40 border-t ${
+        className={`fixed bottom-0 left-0 right-0 z-40 border-t shadow-[0_-6px_20px_rgba(0,0,0,0.08)] ${
           isDarkMode
-            ? "bg-gray-900 border-gray-800"
-            : "bg-white border-gray-200"
-        } safe-area-bottom`}
+            ? "bg-gray-900/95 border-gray-800"
+            : "bg-white/95 border-gray-200"
+        } backdrop-blur safe-area-bottom rounded-t-2xl`}
       >
-        <div className="flex justify-around items-center py-2">
+        <div className="flex justify-around items-center py-2 max-w-3xl mx-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -141,7 +143,13 @@ const MainLayout = () => {
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className="relative flex flex-col items-center min-w-[60px] py-1"
+                className={`relative flex flex-col items-center min-w-[64px] py-1.5 px-2 rounded-xl transition ${
+                  active
+                    ? isDarkMode
+                      ? "bg-purple-900/30"
+                      : "bg-purple-50"
+                    : ""
+                }`}
               >
                 {/* Badge */}
                 {item.badge > 0 && (
@@ -176,7 +184,7 @@ const MainLayout = () => {
 
                 {/* Active Indicator */}
                 {active && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-purple-600 rounded-full" />
+                  <div className="absolute -top-0.5 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-purple-600 rounded-full" />
                 )}
               </button>
             );
