@@ -101,6 +101,9 @@ const ProductCard = ({ product }) => {
             "https://images.pexels.com/photos/6159954/pexels-photo-6159954.jpeg?auto=compress&cs=tinysrgb&w=800"
           }
           alt={product.name}
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
           className={`w-full h-full object-cover transition-all duration-500 ${
             isSold
               ? "opacity-60 grayscale"

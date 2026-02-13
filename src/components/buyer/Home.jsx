@@ -16,7 +16,8 @@ const brandReels = [
   { brand: "Vintage Label", src: "/media/5925311-uhd_2160_3840_30fps.mp4" },
 ];
 
-const repeatedBrandReels = [...brandReels, ...brandReels];
+const reducedReels = brandReels.slice(0, 4);
+const repeatedBrandReels = [...reducedReels, ...reducedReels];
 
 const Home = () => {
   const { isDarkMode } = useTheme();
@@ -58,7 +59,7 @@ const Home = () => {
                   muted
                   loop
                   playsInline
-                  preload="metadata"
+                  preload="none"
                   className="w-full h-full object-cover"
                 >
                   <source src={reel.src} type="video/mp4" />
