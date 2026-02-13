@@ -1,18 +1,27 @@
-
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../context/ThemeContext";
-import { Sparkles, Shirt, Store, TrendingUp, Filter } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, Shirt, TrendingUp, Filter } from "lucide-react";
 import ProductCard from "./ProductCard";
-import { loadAllProducts } from "../../redux/slices/productSlice";
+
+const brandReels = [
+  { brand: "Nike", src: "/media/concept_nike_promo_remix.mp4" },
+  { brand: "Adidas", src: "/media/5266698-hd_1920_1080_30fps.mp4" },
+  { brand: "Puma", src: "/media/4126116-uhd_4096_2160_25fps.mp4" },
+  { brand: "Levi's", src: "/media/12327025_2160_3840_60fps.mp4" },
+  { brand: "Zara", src: "/media/7563865-hd_1080_1920_30fps.mp4" },
+  { brand: "H&M", src: "/media/7563840-hd_1080_1920_30fps.mp4" },
+  { brand: "Uniqlo", src: "/media/7563920-hd_1920_1080_30fps.mp4" },
+  { brand: "Vintage Label", src: "/media/5925311-uhd_2160_3840_30fps.mp4" },
+];
+
+const repeatedBrandReels = [...brandReels, ...brandReels];
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { isDarkMode } = useTheme();
 
-  const [showStats, setShowStats] = useState(true);
+  const showStats = true;
 
   const { products, filteredProducts, selectedCategory } = useSelector(
     (state) => state.products
@@ -20,14 +29,6 @@ const Home = () => {
 
   const list = filteredProducts.length ? filteredProducts : products;
   const availableProducts = list.filter((p) => p.status === "available");
-
-  useEffect(() => {
-    dispatch(loadAllProducts());
-  }, [dispatch]);
-
-  const handleBecomeSeller = () => {
-    navigate("/seller-registration");
-  };
 
   // Calculate stats
   const totalProducts = products.filter((p) => p.status === "available").length;
@@ -38,13 +39,37 @@ const Home = () => {
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Hero Section */}
       <section
-        className={`rounded-3xl px-6 py-8 md:px-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl ${
-          isDarkMode
-            ? "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white"
-            : "bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 text-white"
-        }`}
+        className="relative overflow-hidden rounded-3xl px-6 py-8 md:px-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl text-white border border-white/10 bg-gradient-to-br from-emerald-700 via-teal-700 to-cyan-700"
       >
-        <div className="space-y-3 flex-1">
+        <div className="absolute inset-0 opacity-45 pointer-events-none">
+          <motion.div
+            className="inline-flex gap-3 h-full items-center px-4"
+            style={{ width: "max-content" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, duration: 36, ease: "linear" }}
+          >
+            {repeatedBrandReels.map((reel, index) => (
+              <article
+                key={`hero-${reel.src}-${index}`}
+                className="relative w-[130px] md:w-[180px] aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-black/80 flex-shrink-0"
+              >
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-cover"
+                >
+                  <source src={reel.src} type="video/mp4" />
+                </video>
+              </article>
+            ))}
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/45 to-black/55" />
+        </div>
+
+        <div className="space-y-3 flex-1 relative z-10">
           <div className="inline-flex items-center gap-2 text-xs md:text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
             <Sparkles className="w-4 h-4" />
             <span className="font-medium">New arrivals daily</span>
@@ -80,28 +105,7 @@ const Home = () => {
           )}
         </div>
 
-        {/* CTA Button */}
-        <button
-          onClick={handleBecomeSeller}
-          className="hidden md:flex flex-col items-center gap-2 bg-white text-purple-700 rounded-2xl px-6 py-4 font-semibold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all"
-        >
-          <Store className="w-6 h-6" />
-          <span className="text-sm">Start Selling</span>
-        </button>
       </section>
-
-      {/* Mobile Seller CTA */}
-      <button
-        onClick={handleBecomeSeller}
-        className={`md:hidden w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-semibold shadow-lg transition-all ${
-          isDarkMode
-            ? "bg-gray-800 text-white border border-gray-700 hover:bg-gray-700"
-            : "bg-white text-purple-700 border border-purple-100 hover:bg-purple-50"
-        }`}
-      >
-        <Store className="w-5 h-5" />
-        <span>Become a Seller & Earn</span>
-      </button>
 
       {/* Category Header */}
       <div className="flex items-center justify-between">
@@ -133,8 +137,8 @@ const Home = () => {
           <button
             className={`p-2 rounded-lg transition ${
               isDarkMode
-                ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "app-panel text-slate-300 hover:bg-slate-800"
+                : "app-panel text-slate-600 hover:bg-slate-100"
             }`}
           >
             <Filter className="w-5 h-5" />
@@ -147,8 +151,8 @@ const Home = () => {
         <div
           className={`mt-10 flex flex-col items-center justify-center text-center gap-4 py-16 rounded-3xl border-2 border-dashed ${
             isDarkMode
-              ? "bg-gray-800/50 border-gray-700 text-gray-300"
-              : "bg-gray-50 border-gray-200 text-gray-600"
+              ? "bg-slate-900/40 border-slate-700 text-slate-300"
+              : "bg-white/70 border-slate-200 text-slate-600"
           }`}
         >
           <div
@@ -178,13 +182,6 @@ const Home = () => {
               Be the first to list something amazing!
             </p>
           </div>
-          <button
-            onClick={handleBecomeSeller}
-            className="mt-2 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:shadow-lg transition-all hover:scale-105"
-          >
-            <Store className="w-5 h-5" />
-            Become a Seller
-          </button>
         </div>
       ) : (
         /* Product Grid */
@@ -200,18 +197,18 @@ const Home = () => {
         <div
           className={`mt-8 rounded-2xl p-6 flex items-center gap-4 ${
             isDarkMode
-              ? "bg-gradient-to-r from-purple-900/50 to-blue-900/50 border border-purple-800/30"
-              : "bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100"
+              ? "bg-gradient-to-r from-emerald-900/40 to-cyan-900/40 border border-emerald-800/40"
+              : "bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-100"
           }`}
         >
           <div
             className={`p-3 rounded-full ${
-              isDarkMode ? "bg-purple-900/50" : "bg-purple-100"
+              isDarkMode ? "bg-emerald-900/50" : "bg-emerald-100"
             }`}
           >
             <TrendingUp
               className={`w-6 h-6 ${
-                isDarkMode ? "text-purple-400" : "text-purple-600"
+                isDarkMode ? "text-emerald-400" : "text-emerald-700"
               }`}
             />
           </div>

@@ -1,0 +1,202 @@
+.landing-shell {
+  --bg-1: #f5f1e8;
+  --bg-2: #dae7d7;
+  --ink: #112211;
+  --soft-ink: #2b3f2e;
+  --line: rgba(17, 34, 17, 0.12);
+  --panel: rgba(255, 255, 255, 0.58);
+  --accent: #1f8f58;
+  --accent-2: #1069a5;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 14% 22%, rgba(16, 105, 165, 0.26), transparent 42%),
+    radial-gradient(circle at 82% 14%, rgba(31, 143, 88, 0.2), transparent 40%),
+    linear-gradient(120deg, var(--bg-1), var(--bg-2));
+  color: var(--ink);
+  padding: 2rem 1rem 3rem;
+}
+
+.landing-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 0.4px, transparent 0.4px);
+  background-size: 3px 3px;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.landing-hero,
+.landing-metrics,
+.landing-features {
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.landing-hero {
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  backdrop-filter: blur(8px);
+  background: var(--panel);
+  padding: 2rem 1.2rem;
+  text-align: center;
+}
+
+.landing-badge {
+  width: fit-content;
+  margin: 0 auto 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--soft-ink);
+}
+
+.landing-title {
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  font-size: clamp(2.2rem, 14vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.09em;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.landing-title span {
+  background: linear-gradient(180deg, #0f2919, #185a38);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 14px 28px rgba(11, 40, 25, 0.15);
+}
+
+.landing-subtitle {
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  font-size: clamp(1.15rem, 4vw, 2.2rem);
+  letter-spacing: 0.01em;
+}
+
+.landing-copy {
+  max-width: 760px;
+  margin: 1rem auto 0;
+  font-size: clamp(0.94rem, 2.4vw, 1.2rem);
+  line-height: 1.65;
+  color: #2b3f2e;
+}
+
+.landing-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.72rem;
+  flex-wrap: wrap;
+}
+
+.landing-btn-primary,
+.landing-btn-secondary {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.82rem 1.35rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.landing-btn-primary {
+  color: #f8fffc;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  box-shadow: 0 12px 34px rgba(16, 105, 165, 0.22);
+}
+
+.landing-btn-secondary {
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.landing-btn-primary:hover,
+.landing-btn-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.landing-metrics {
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.landing-marquee {
+  width: max-content;
+  display: inline-flex;
+  gap: 2.4rem;
+  white-space: nowrap;
+  padding: 0.9rem 1.2rem;
+  color: #1b452e;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.03em;
+}
+
+.landing-features {
+  margin-top: 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.landing-card {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  backdrop-filter: blur(6px);
+  padding: 1.2rem;
+  min-height: 220px;
+  transform-style: preserve-3d;
+}
+
+.landing-card-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: linear-gradient(145deg, rgba(16, 105, 165, 0.15), rgba(31, 143, 88, 0.24));
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #174f32;
+}
+
+.landing-card h3 {
+  margin-top: 1rem;
+  font-family: "Syne", "Space Grotesk", sans-serif;
+  font-size: 1.15rem;
+}
+
+.landing-card p {
+  margin-top: 0.6rem;
+  color: #35543f;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .landing-features {
+    grid-template-columns: 1fr;
+  }
+}

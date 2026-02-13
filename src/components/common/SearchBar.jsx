@@ -29,7 +29,7 @@ const SearchBar = ({ isDarkMode }) => {
     dispatch(filterByCategory(value));
   };
 
-  const bg = isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200";
+  const bg = isDarkMode ? "app-panel" : "app-panel-strong";
   const text = isDarkMode ? "text-gray-100" : "text-gray-800";
   const placeholder = isDarkMode ? "placeholder-gray-400" : "placeholder-gray-400";
 
@@ -51,8 +51,8 @@ const SearchBar = ({ isDarkMode }) => {
         onChange={handleCategoryChange}
         className={`md:w-52 w-full px-3 py-2 rounded-xl border text-sm ${
           isDarkMode
-            ? "bg-gray-800 border-gray-700 text-gray-100"
-            : "bg-white border-gray-200 text-gray-700"
+            ? "app-panel text-gray-100"
+            : "app-panel-strong text-gray-700"
         }`}
       >
         {Object.values(CATEGORIES).map((cat) => (

@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# ThriftApp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Thrift marketplace app with:
+- React frontend
+- Express backend
+- SQLite persistent storage for products
+- Disk-based image uploads served as public URLs
 
-## Available Scripts
+## Persistent Image Storage
 
-In the project directory, you can run:
+Images are uploaded to `server/uploads/` and product metadata is stored in `server/data/thriftapp.db`.
+Because products are fetched from the backend API, all users now see the same products and pictures.
 
-### `npm start`
+## Run Locally
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Install dependencies:
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. Start backend API:
+```bash
+npm run server
+```
 
-### `npm test`
+3. In another terminal, start frontend:
+```bash
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Frontend: `http://localhost:3000`  
+Backend: `http://localhost:5000`
 
-### `npm run build`
+## Environment Variables
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`server/.env` supports:
+- `PORT` (default: `5000`)
+- `CORS_ORIGIN` (default: `http://localhost:3000`)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Optional frontend API override:
+- `REACT_APP_API_BASE_URL` (default: `http://localhost:5000`)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## API Endpoints
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `GET /api/health`
+- `GET /api/products`
+- `POST /api/products` (multipart form-data, image field name: `image`)
+- `PATCH /api/products/:id` (JSON: `{ "status": "sold" }`)
+- `DELETE /api/products/:id`

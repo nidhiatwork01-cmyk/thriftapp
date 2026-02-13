@@ -19,12 +19,6 @@ const preloadedState = {
   wishlist: {
     items: getFromLocalStorage("wishlistItems") || [],
   },
-  products: {
-    products: getFromLocalStorage("products") || [],
-    filteredProducts: [],
-    selectedCategory: "All Categories",
-    searchQuery: "",
-  },
 };
 
 const store = configureStore({

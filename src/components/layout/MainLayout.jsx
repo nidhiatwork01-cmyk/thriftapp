@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../context/ThemeContext";
 import {
   Home,
@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 import Menu from "../common/Menu";
 import SearchBar from "../common/SearchBar";
+import { fetchProducts } from "../../redux/slices/productSlice";
 
 const MainLayout = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const { isDarkMode } = useTheme();
   
@@ -23,6 +25,10 @@ const MainLayout = () => {
 
   const cartItems = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const navItems = [
     { name: "Home", icon: Home, path: "/home", badge: 0 },
@@ -38,12 +44,21 @@ const MainLayout = () => {
       path: "/wishlist",
       badge: wishlistItems?.length || 0,
     },
-    { name: "You", icon: User, path: "/seller-dashboard", badge: 0 },
+    { name: "You", icon: User, path: "/you", badge: 0 },
   ];
 
   const isActive = (path) => {
     if (path === "/home") {
       return location.pathname === "/home" || location.pathname.startsWith("/product/");
+    }
+    if (path === "/you") {
+      return (
+        location.pathname === "/you" ||
+        location.pathname === "/profile" ||
+        location.pathname === "/settings" ||
+        location.pathname === "/orders" ||
+        location.pathname === "/coupons"
+      );
     }
     return location.pathname === path;
   };
@@ -53,35 +68,29 @@ const MainLayout = () => {
     location.pathname === "/home" ||
     location.pathname === "/cart" ||
     location.pathname === "/wishlist" ||
-    location.pathname === "/seller-dashboard";
+    location.pathname === "/you" ||
+    location.pathname === "/profile" ||
+    location.pathname === "/settings" ||
+    location.pathname === "/orders" ||
+    location.pathname === "/coupons";
 
   return (
     <div
-      className={`min-h-screen flex flex-col ${
-        isDarkMode ? "bg-gray-900" : "bg-gray-50"
-      }`}
+      className="min-h-screen flex flex-col"
     >
       {/* Top Header (Conditional) */}
       {showTopHeader && (
         <header
-          className={`sticky top-0 z-30 border-b ${
-            isDarkMode
-              ? "bg-gray-900 border-gray-800"
-              : "bg-white border-gray-200"
-          }`}
+          className="sticky top-0 z-30 border-b app-panel"
         >
           <div className="px-4 py-3 flex items-center justify-between gap-3">
             {/* Logo/Title */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg brand-gradient flex items-center justify-center shadow-lg shadow-emerald-500/20">
                 <span className="text-white font-bold text-sm">TH</span>
               </div>
-              <h1
-                className={`text-lg font-bold ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
-                ThriftHub
+              <h1 className="text-lg font-bold tracking-tight">
+                ThriftIt
               </h1>
             </div>
 
@@ -89,21 +98,13 @@ const MainLayout = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className={`p-2 rounded-lg transition ${
-                  isDarkMode
-                    ? "hover:bg-gray-800 text-gray-300"
-                    : "hover:bg-gray-100 text-gray-600"
-                }`}
+                className="p-2 rounded-lg transition app-text-muted hover:bg-white/10 hover:text-[var(--text-primary)]"
               >
                 <Search className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className={`p-2 rounded-lg transition ${
-                  isDarkMode
-                    ? "hover:bg-gray-800 text-gray-300"
-                    : "hover:bg-gray-100 text-gray-600"
-                }`}
+                className="p-2 rounded-lg transition app-text-muted hover:bg-white/10 hover:text-[var(--text-primary)]"
               >
                 <MenuIcon className="w-5 h-5" />
               </button>
@@ -126,11 +127,7 @@ const MainLayout = () => {
 
       {/* Bottom Navigation */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 z-40 border-t ${
-          isDarkMode
-            ? "bg-gray-900 border-gray-800"
-            : "bg-white border-gray-200"
-        } safe-area-bottom`}
+        className="fixed bottom-0 left-0 right-0 z-40 border-t app-panel safe-area-bottom"
       >
         <div className="flex justify-around items-center py-2">
           {navItems.map((item) => {
@@ -154,10 +151,10 @@ const MainLayout = () => {
                 <Icon
                   className={`w-6 h-6 mb-1 transition-colors ${
                     active
-                      ? "text-purple-600"
+                      ? "text-emerald-400"
                       : isDarkMode
-                      ? "text-gray-400"
-                      : "text-gray-500"
+                      ? "text-slate-400"
+                      : "text-slate-500"
                   }`}
                 />
 
@@ -165,10 +162,10 @@ const MainLayout = () => {
                 <span
                   className={`text-[11px] font-medium transition-colors ${
                     active
-                      ? "text-purple-600"
+                      ? "text-emerald-400"
                       : isDarkMode
-                      ? "text-gray-400"
-                      : "text-gray-500"
+                      ? "text-slate-400"
+                      : "text-slate-500"
                   }`}
                 >
                   {item.name}
@@ -176,7 +173,7 @@ const MainLayout = () => {
 
                 {/* Active Indicator */}
                 {active && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-purple-600 rounded-full" />
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-emerald-400 rounded-full" />
                 )}
               </button>
             );

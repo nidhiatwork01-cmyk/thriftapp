@@ -1,13 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout, switchMode } from "../../redux/slices/authSlice";
+import { logout } from "../../redux/slices/authSlice";
 import { useTheme } from "../../context/ThemeContext";
 import {
   User,
   LogOut,
   Home,
-  Store,
   ShoppingBag,
   Moon,
   Sun,
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 
 const Menu = ({ isOpen, onClose }) => {
-  const { userMode, user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { isDarkMode, toggleTheme } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,21 +30,6 @@ const Menu = ({ isOpen, onClose }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    onClose();
-  };
-
-  const handleModeSwitch = () => {
-    if (userMode === "buyer") {
-      if (user?.isSeller) {
-        dispatch(switchMode("seller"));
-        navigate("/seller-dashboard");
-      } else {
-        navigate("/seller-registration");
-      }
-    } else {
-      dispatch(switchMode("buyer"));
-      navigate("/home");
-    }
     onClose();
   };
 
@@ -105,25 +89,12 @@ const Menu = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Mode Badge */}
+          {/* Buyer Badge */}
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-              userMode === "seller"
-                ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-            }`}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
           >
-            {userMode === "seller" ? (
-              <>
-                <Store className="w-3.5 h-3.5" />
-                Seller Mode
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-3.5 h-3.5" />
-                Buyer Mode
-              </>
-            )}
+            <ShoppingBag className="w-3.5 h-3.5" />
+            Buyer App
           </div>
         </div>
 
@@ -185,30 +156,6 @@ const Menu = ({ isOpen, onClose }) => {
             }`}
           />
 
-          {/* Mode Switch */}
-          <button
-            onClick={handleModeSwitch}
-            className={`flex items-center gap-3 p-3 rounded-xl transition ${
-              isDarkMode
-                ? "hover:bg-purple-900/30 text-purple-300"
-                : "hover:bg-purple-50 text-purple-700"
-            }`}
-          >
-            {userMode === "buyer" ? (
-              <>
-                <Store className="w-5 h-5" />
-                <span className="font-medium">
-                  {user?.isSeller ? "Switch to Seller" : "Become a Seller"}
-                </span>
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-5 h-5" />
-                <span className="font-medium">Switch to Buyer</span>
-              </>
-            )}
-          </button>
-
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
@@ -250,9 +197,9 @@ const Menu = ({ isOpen, onClose }) => {
             }`}
           />
 
-          {/* Profile (Coming Soon) */}
+          {/* Profile */}
           <button
-            onClick={() => alert("Profile page coming soon!")}
+            onClick={() => handleNavigation("/profile")}
             className={`flex items-center gap-3 p-3 rounded-xl transition ${
               isDarkMode
                 ? "hover:bg-gray-800 text-gray-300 hover:text-white"
@@ -263,9 +210,9 @@ const Menu = ({ isOpen, onClose }) => {
             <span className="font-medium">Profile</span>
           </button>
 
-          {/* Settings (Coming Soon) */}
+          {/* Settings */}
           <button
-            onClick={() => alert("Settings coming soon!")}
+            onClick={() => handleNavigation("/settings")}
             className={`flex items-center gap-3 p-3 rounded-xl transition ${
               isDarkMode
                 ? "hover:bg-gray-800 text-gray-300 hover:text-white"
@@ -278,19 +225,21 @@ const Menu = ({ isOpen, onClose }) => {
         </div>
 
         {/* Logout Button */}
-        <div
-          className={`absolute bottom-0 left-0 right-0 p-4 border-t ${
-            isDarkMode ? "border-gray-800" : "border-gray-200"
-          }`}
-        >
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-3 p-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition"
+        {isAuthenticated && (
+          <div
+            className={`absolute bottom-0 left-0 right-0 p-4 border-t ${
+              isDarkMode ? "border-gray-800" : "border-gray-200"
+            }`}
           >
-            <LogOut className="w-5 h-5" />
-            Logout
-          </button>
-        </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-3 p-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

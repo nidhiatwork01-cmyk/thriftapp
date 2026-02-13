@@ -30,10 +30,10 @@ export const ThemeProvider = ({ children }) => {
     
     if (isDarkMode) {
       root.classList.add('dark');
-      document.body.style.backgroundColor = '#111827'; // gray-900
+      root.setAttribute("data-theme", "dark");
     } else {
       root.classList.remove('dark');
-      document.body.style.backgroundColor = '#f9fafb'; // gray-50
+      root.setAttribute("data-theme", "light");
     }
     
     // Save to localStorage

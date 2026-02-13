@@ -6,19 +6,17 @@ import {
   PlusCircle,
   Package,
   TrendingUp,
-  DollarSign,
   ShoppingBag,
   CheckCircle,
-  Clock,
-  AlertCircle,
-  Edit,
   Trash2,
   Eye,
   IndianRupee,
   Calendar,
   BarChart3,
+  LogOut,
 } from "lucide-react";
 import { deleteProduct } from "../../redux/slices/productSlice";
+import { clearSellerSession, getSellerSession } from "../../utils/sellerSession";
 
 const SellerDashboard = () => {
   const navigate = useNavigate();
@@ -26,14 +24,14 @@ const SellerDashboard = () => {
   const { isDarkMode } = useTheme();
 
   const { products } = useSelector((state) => state.products);
-  const { user } = useSelector((state) => state.auth);
+  const sellerUser = getSellerSession();
 
   const [selectedTab, setSelectedTab] = useState("all"); // all, available, sold
 
   // Filter products by seller
   const sellerProducts = useMemo(() => {
-    return products.filter((p) => p.sellerEmail === user?.email);
-  }, [products, user]);
+    return products.filter((p) => p.sellerEmail === sellerUser?.email);
+  }, [products, sellerUser]);
 
   // Calculate analytics
   const analytics = useMemo(() => {
@@ -94,7 +92,7 @@ const SellerDashboard = () => {
               isDarkMode ? "text-white" : "text-gray-900"
             }`}
           >
-            Welcome back, {user?.storeName || user?.name || "Seller"}! 👋
+            Welcome back, {sellerUser?.storeName || sellerUser?.name || "Seller"}! 👋
           </h2>
           <p
             className={`text-sm mt-1 ${
@@ -104,13 +102,27 @@ const SellerDashboard = () => {
             Manage your thrift store & track your sales
           </p>
         </div>
-        <button
-          onClick={() => navigate("/seller-listing")}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-3 rounded-xl font-medium hover:shadow-lg transition-all hover:scale-105"
-        >
-          <PlusCircle className="w-5 h-5" />
-          <span className="hidden sm:inline">List Product</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/seller-listing")}
+            className="inline-flex items-center gap-2 brand-gradient text-white px-5 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-emerald-500/20 transition-all hover:scale-105"
+          >
+            <PlusCircle className="w-5 h-5" />
+            <span className="hidden sm:inline">List Product</span>
+          </button>
+          <button
+            onClick={() => {
+              clearSellerSession();
+              navigate("/seller-registration");
+            }}
+            className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition ${
+              isDarkMode ? "bg-slate-800 text-slate-200 hover:bg-slate-700" : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Analytics Cards */}
@@ -119,8 +131,8 @@ const SellerDashboard = () => {
         <div
           className={`rounded-2xl p-5 border ${
             isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-100"
+              ? "app-panel"
+              : "app-panel-strong"
           } shadow-sm`}
         >
           <div className="flex items-center justify-between mb-3">
@@ -131,7 +143,7 @@ const SellerDashboard = () => {
             >
               <Package
                 className={`w-5 h-5 ${
-                  isDarkMode ? "text-purple-400" : "text-purple-600"
+                  isDarkMode ? "text-emerald-400" : "text-emerald-600"
                 }`}
               />
             </div>
@@ -158,8 +170,8 @@ const SellerDashboard = () => {
         <div
           className={`rounded-2xl p-5 border ${
             isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-100"
+              ? "app-panel"
+              : "app-panel-strong"
           } shadow-sm`}
         >
           <div className="flex items-center justify-between mb-3">
@@ -197,8 +209,8 @@ const SellerDashboard = () => {
         <div
           className={`rounded-2xl p-5 border ${
             isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-100"
+              ? "app-panel"
+              : "app-panel-strong"
           } shadow-sm`}
         >
           <div className="flex items-center justify-between mb-3">
@@ -236,8 +248,8 @@ const SellerDashboard = () => {
         <div
           className={`rounded-2xl p-5 border ${
             isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-100"
+              ? "app-panel"
+              : "app-panel-strong"
           } shadow-sm`}
         >
           <div className="flex items-center justify-between mb-3">
@@ -284,18 +296,18 @@ const SellerDashboard = () => {
         <div
           className={`rounded-2xl p-4 border flex items-center gap-4 ${
             isDarkMode
-              ? "bg-gradient-to-r from-purple-900/30 to-blue-900/30 border-purple-800/30"
-              : "bg-gradient-to-r from-purple-50 to-blue-50 border-purple-100"
+              ? "bg-gradient-to-r from-emerald-900/30 to-cyan-900/30 border-emerald-800/30"
+              : "bg-gradient-to-r from-emerald-50 to-cyan-50 border-emerald-100"
           }`}
         >
           <div
             className={`p-3 rounded-full ${
-              isDarkMode ? "bg-purple-900/50" : "bg-purple-100"
+              isDarkMode ? "bg-emerald-900/50" : "bg-emerald-100"
             }`}
           >
             <BarChart3
               className={`w-6 h-6 ${
-                isDarkMode ? "text-purple-400" : "text-purple-600"
+                isDarkMode ? "text-emerald-400" : "text-emerald-700"
               }`}
             />
           </div>
@@ -322,15 +334,15 @@ const SellerDashboard = () => {
       <div
         className={`flex items-center gap-2 p-1 rounded-xl border ${
           isDarkMode
-            ? "bg-gray-800 border-gray-700"
-            : "bg-gray-100 border-gray-200"
+            ? "bg-slate-900/70 border-slate-700"
+            : "bg-white/85 border-slate-200"
         }`}
       >
         <button
           onClick={() => setSelectedTab("all")}
           className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${
             selectedTab === "all"
-              ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
+              ? "brand-gradient text-white shadow-md"
               : isDarkMode
               ? "text-gray-400 hover:text-white"
               : "text-gray-600 hover:text-gray-900"
@@ -342,7 +354,7 @@ const SellerDashboard = () => {
           onClick={() => setSelectedTab("available")}
           className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${
             selectedTab === "available"
-              ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
+              ? "brand-gradient text-white shadow-md"
               : isDarkMode
               ? "text-gray-400 hover:text-white"
               : "text-gray-600 hover:text-gray-900"
@@ -354,7 +366,7 @@ const SellerDashboard = () => {
           onClick={() => setSelectedTab("sold")}
           className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${
             selectedTab === "sold"
-              ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
+              ? "brand-gradient text-white shadow-md"
               : isDarkMode
               ? "text-gray-400 hover:text-white"
               : "text-gray-600 hover:text-gray-900"
@@ -369,8 +381,8 @@ const SellerDashboard = () => {
         <div
           className={`text-center py-16 rounded-2xl border-2 border-dashed ${
             isDarkMode
-              ? "bg-gray-800/50 border-gray-700"
-              : "bg-gray-50 border-gray-200"
+              ? "bg-slate-900/40 border-slate-700"
+              : "bg-white/70 border-slate-200"
           }`}
         >
           <Package
@@ -398,7 +410,7 @@ const SellerDashboard = () => {
           </p>
           <button
             onClick={() => navigate("/seller-listing")}
-            className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"
+            className="mt-4 inline-flex items-center gap-2 px-6 py-3 brand-gradient text-white rounded-xl font-medium hover:shadow-lg transition"
           >
             <PlusCircle className="w-5 h-5" />
             List Your First Product
@@ -411,8 +423,8 @@ const SellerDashboard = () => {
               key={p.id}
               className={`flex gap-4 rounded-2xl p-4 border shadow-sm transition-all hover:shadow-md ${
                 isDarkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-gray-100"
+                  ? "app-panel"
+                  : "app-panel-strong"
               }`}
             >
               {/* Product Image */}
@@ -463,13 +475,13 @@ const SellerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-1">
                     <IndianRupee
-                      className={`w-4 h-4 ${
-                        isDarkMode ? "text-purple-400" : "text-purple-600"
+                    className={`w-4 h-4 ${
+                        isDarkMode ? "text-emerald-400" : "text-emerald-700"
                       }`}
                     />
                     <span
                       className={`text-lg font-bold ${
-                        isDarkMode ? "text-purple-400" : "text-purple-600"
+                        isDarkMode ? "text-emerald-400" : "text-emerald-700"
                       }`}
                     >
                       {Number(p.price || 0).toFixed(0)}

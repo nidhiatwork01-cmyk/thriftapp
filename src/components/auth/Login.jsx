@@ -45,7 +45,9 @@ const Login = () => {
 
     if (user) {
       dispatch(login(formData));
-      navigate('/home');
+      const sellerIntent =
+        typeof window !== "undefined" && window.sessionStorage.getItem("sellerEntryIntent") === "true";
+      navigate(sellerIntent ? "/seller-registration" : "/home");
     } else {
       setError('Invalid email or password');
     }

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addProduct } from "../../redux/slices/productSlice";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { CATEGORIES } from "../../utils/constants";
 import { Upload, X, Image as ImageIcon, CheckCircle, ArrowLeft } from "lucide-react";
+import { getSellerSession } from "../../utils/sellerSession";
 
 const ProductListing = () => {
-  const { user } = useSelector((state) => state.auth);
+  const sellerUser = getSellerSession();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
@@ -19,9 +20,9 @@ const ProductListing = () => {
     size: "",
     condition: "Good",
     description: "",
-    imageUrl: "",
   });
 
+  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
@@ -44,23 +45,13 @@ const ProductListing = () => {
     }
 
     setError("");
-    setIsUploading(true);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData((prev) => ({
-        ...prev,
-        imageUrl: reader.result,
-      }));
-      setImagePreview(reader.result);
-      setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   // Remove image
   const handleRemoveImage = () => {
-    setFormData((prev) => ({ ...prev, imageUrl: "" }));
+    setImageFile(null);
     setImagePreview(null);
   };
 
@@ -74,11 +65,11 @@ const ProductListing = () => {
   };
 
   // Submit Product
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validation
-    if (!formData.imageUrl) {
+    if (!imageFile) {
       setError("Please upload a product image");
       return;
     }
@@ -93,19 +84,34 @@ const ProductListing = () => {
       return;
     }
 
-    const productData = {
-      ...formData,
-      sellerEmail: user.email,
-      price: Number(formData.price),
-    };
+    try {
+      setIsUploading(true);
+      if (!sellerUser?.isSeller) {
+        setError("Please complete seller registration first.");
+        navigate("/seller-registration");
+        return;
+      }
 
-    dispatch(addProduct(productData));
-    
-    // Show success message
-    alert("✅ Product listed successfully!");
-    
-    // Navigate to dashboard
-    navigate("/seller-dashboard");
+      if (!sellerUser?.email) {
+        setError("Seller email missing. Please log in again.");
+        return;
+      }
+
+      const productData = {
+        ...formData,
+        sellerEmail: sellerUser.email,
+        price: Number(formData.price),
+        imageFile,
+      };
+
+      await dispatch(addProduct(productData)).unwrap();
+      alert("✅ Product listed successfully!");
+      navigate("/seller-dashboard");
+    } catch (submitError) {
+      setError(submitError || "Failed to upload product");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (

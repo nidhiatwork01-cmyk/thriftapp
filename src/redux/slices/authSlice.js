@@ -2,11 +2,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { saveToLocalStorage, getFromLocalStorage } from "../../utils/localStorage";
 
+const storedUser = getFromLocalStorage("user") || null;
+const safeBuyerUser = storedUser && !storedUser.isSeller ? storedUser : null;
+
 const initialState = {
   users: getFromLocalStorage("users") || [],
-  user: getFromLocalStorage("user") || null,
-  isAuthenticated: getFromLocalStorage("isAuthenticated") || false,
-  userMode: getFromLocalStorage("userMode") || "buyer",
+  user: safeBuyerUser,
+  isAuthenticated: safeBuyerUser ? Boolean(getFromLocalStorage("isAuthenticated")) : false,
+  userMode: "buyer",
 };
 
 const authSlice = createSlice({
@@ -23,16 +26,19 @@ const authSlice = createSlice({
       state.users.push(newUser);
       state.user = newUser;
       state.isAuthenticated = true;
+      state.userMode = "buyer";
 
       // PERSIST
       saveToLocalStorage("users", state.users);
       saveToLocalStorage("user", state.user);
       saveToLocalStorage("isAuthenticated", true);
+      saveToLocalStorage("userMode", "buyer");
     },
 
     login: (state, action) => {
       const loggedInUser = state.users.find(
         (u) =>
+          !u.isSeller &&
           u.email === action.payload.email &&
           u.password === action.payload.password
       );
@@ -40,18 +46,22 @@ const authSlice = createSlice({
       if (loggedInUser) {
         state.user = loggedInUser;
         state.isAuthenticated = true;
+        state.userMode = "buyer";
 
         // PERSIST
         saveToLocalStorage("user", state.user);
         saveToLocalStorage("isAuthenticated", true);
+        saveToLocalStorage("userMode", state.userMode);
       }
     },
 
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      state.userMode = "buyer";
       saveToLocalStorage("isAuthenticated", false);
       saveToLocalStorage("user", null);
+      saveToLocalStorage("userMode", "buyer");
     },
 
     switchMode: (state, action) => {
@@ -60,13 +70,44 @@ const authSlice = createSlice({
     },
 
     updateSellerDetails: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
+      const currentUser = state.user || {};
+      state.user = { ...currentUser, ...action.payload };
+
+      if (state.user?.id) {
+        state.users = state.users.map((u) =>
+          u.id === state.user.id ? { ...u, ...action.payload } : u
+        );
+      }
+
       saveToLocalStorage("user", state.user);
+      saveToLocalStorage("users", state.users);
+    },
+
+    setAuthenticatedUser: (state, action) => {
+      const incomingUser = action.payload;
+      if (!incomingUser) return;
+      if (incomingUser.isSeller) return;
+
+      state.user = incomingUser;
+      state.isAuthenticated = true;
+      state.userMode = "buyer";
+
+      const existingIndex = state.users.findIndex((u) => u.id === incomingUser.id);
+      if (existingIndex !== -1) {
+        state.users[existingIndex] = { ...state.users[existingIndex], ...incomingUser };
+      } else {
+        state.users.push(incomingUser);
+      }
+
+      saveToLocalStorage("users", state.users);
+      saveToLocalStorage("user", state.user);
+      saveToLocalStorage("isAuthenticated", true);
+      saveToLocalStorage("userMode", state.userMode);
     },
   },
 });
 
-export const { signup, login, logout, switchMode, updateSellerDetails } =
+export const { signup, login, logout, switchMode, updateSellerDetails, setAuthenticatedUser } =
   authSlice.actions;
 
 export default authSlice.reducer;
