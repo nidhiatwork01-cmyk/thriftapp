@@ -55,7 +55,7 @@ const withFriendlyNetworkError = (error, fallbackMessage) => {
     error?.name === "TypeError" ||
     /failed to fetch|networkerror|load failed/i.test(rawMessage)
   ) {
-    return "Cannot reach backend. Check API URL, CORS settings, and backend service status.";
+    return "Cannot reach backend. If using Render free tier, the server may be waking up from sleep (takes ~45s). Please wait a moment and click Retry.";
   }
 
   if (/non-json response/i.test(rawMessage)) {
@@ -70,42 +70,57 @@ const withFriendlyNetworkError = (error, fallbackMessage) => {
 };
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, thunkApi) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/products`);
+  const maxRetries = 2;
+  let lastError;
 
-    if (!response.ok) {
-      let message = `Failed to fetch products (HTTP ${response.status})`;
-      const contentType = (response.headers.get("content-type") || "").toLowerCase();
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/products`);
 
-      if (contentType.includes("application/json")) {
-        const payload = await response.json().catch(() => ({}));
-        if (payload?.message) {
-          message = payload.message;
+      if (!response.ok) {
+        let message = `Failed to fetch products (HTTP ${response.status})`;
+        const contentType = (response.headers.get("content-type") || "").toLowerCase();
+
+        if (contentType.includes("application/json")) {
+          const payload = await response.json().catch(() => ({}));
+          if (payload?.message) {
+            message = payload.message;
+          }
+        } else {
+          const text = await response.text().catch(() => "");
+          if (text) {
+            message = text.slice(0, 200);
+          }
         }
-      } else {
-        const text = await response.text().catch(() => "");
-        if (text) {
-          message = text.slice(0, 200);
-        }
+
+        throw new Error(message);
       }
 
-      throw new Error(message);
-    }
+      const contentType = (response.headers.get("content-type") || "").toLowerCase();
+      if (!contentType.includes("application/json")) {
+        throw new Error(`Non-JSON response from API (${contentType || "unknown content-type"})`);
+      }
 
-    const contentType = (response.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      throw new Error(`Non-JSON response from API (${contentType || "unknown content-type"})`);
-    }
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid products payload from server");
+      }
 
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error("Invalid products payload from server");
+      return data;
+    } catch (error) {
+      lastError = error;
+      if (
+        attempt < maxRetries &&
+        (error?.name === "TypeError" || /failed to fetch|networkerror|load failed/i.test(error?.message || ""))
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        continue;
+      }
+      break;
     }
-
-    return data;
-  } catch (error) {
-    return thunkApi.rejectWithValue(withFriendlyNetworkError(error, "Failed to fetch products"));
   }
+
+  return thunkApi.rejectWithValue(withFriendlyNetworkError(lastError, "Failed to fetch products"));
 });
 
 export const addProduct = createAsyncThunk("products/addProduct", async (payload, thunkApi) => {
