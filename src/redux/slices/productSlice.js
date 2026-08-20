@@ -51,6 +51,10 @@ const applyProductFilters = (
 const withFriendlyNetworkError = (error, fallbackMessage) => {
   const rawMessage = error?.message || "";
 
+  if (/just a moment|cloudflare|challenge|bot protection/i.test(rawMessage)) {
+    return "Backend security challenge triggered (Cloudflare/Render bot protection). Please set REACT_APP_API_BASE_URL in Vercel to connect directly.";
+  }
+
   if (
     error?.name === "TypeError" ||
     /failed to fetch|networkerror|load failed/i.test(rawMessage)
@@ -58,8 +62,8 @@ const withFriendlyNetworkError = (error, fallbackMessage) => {
     return "Cannot reach backend. If using Render free tier, the server may be waking up from sleep (takes ~45s). Please wait a moment and click Retry.";
   }
 
-  if (/non-json response/i.test(rawMessage)) {
-    return "Received non-JSON response from API. Verify REACT_APP_API_BASE_URL points to your backend.";
+  if (/non-json response/i.test(rawMessage) || /html error page/i.test(rawMessage)) {
+    return "Received non-JSON response from API. Verify REACT_APP_API_BASE_URL points directly to your backend.";
   }
 
   if (/cors blocked/i.test(rawMessage)) {
@@ -88,8 +92,12 @@ export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_
           }
         } else {
           const text = await response.text().catch(() => "");
-          if (text) {
-            message = text.slice(0, 200);
+          if (/just a moment/i.test(text) || /cloudflare/i.test(text)) {
+            message = "Cloudflare/Render security challenge block";
+          } else if (/<html|<!doctype/i.test(text)) {
+            message = "Server returned HTML error page instead of JSON";
+          } else if (text) {
+            message = text.slice(0, 150);
           }
         }
 
@@ -98,6 +106,10 @@ export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_
 
       const contentType = (response.headers.get("content-type") || "").toLowerCase();
       if (!contentType.includes("application/json")) {
+        const text = await response.text().catch(() => "");
+        if (/just a moment/i.test(text) || /cloudflare/i.test(text)) {
+          throw new Error("Cloudflare/Render security challenge block");
+        }
         throw new Error(`Non-JSON response from API (${contentType || "unknown content-type"})`);
       }
 
